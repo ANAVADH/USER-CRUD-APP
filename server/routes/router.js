@@ -17,4 +17,6 @@ route.get('/api/users',controller.find)
 route.put('/api/users/:id',controller.update)
 route.post('/api/users/:id',controller.delete)
 
-module.exports = route
+module.exports = route;
+
+
