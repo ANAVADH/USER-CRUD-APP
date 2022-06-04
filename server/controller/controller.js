@@ -21,24 +21,69 @@ const user = new Userdb({
 
 //save users in the dataBase
 user.save(user).then(data=>{
-    res.send(data)
+    res.redirect('/add_user')
+   
 })
 .catch(err=>{
     res.status(500).send({message:err.message ||"some error occured while creating" })
 })
 }
 
-//retrieve and return all the users
-//
+
+//single user and all user
 
 exports.find=(req,res)=>{
-Userdb.find().then(user=>{
-    res.send(user)
-})
-.catch(err =>{
-    res.status(500).send({message:err.message||"error occured while retreving the data"})
-})
 
+if(req.query.id){
+    const id = req.query.id;
+    Userdb.findById(id).then(data=>{
+        if(!data){
+         res.status(404).send({message:"not found user with"+id})
+        }else{
+            res.send(data)
+        }
+    })
+    .catch(err=>{
+        res.status(500).send({message:"error in retreaving the data of the user with"+id})
+    })
+
+}else{
+    Userdb.find().then(user=>{
+        res.send(user)
+    })
+    .catch(err =>{
+        res.status(500).send({message:err.message||"error occured while retreving the data"})
+    })
+
+}
+
+
+
+}
+
+
+
+// Update a new idetified user by user id
+exports.update = (req, res)=>{
+    if(!req.body){
+        return res
+            .status(400)
+            .send({ message : "Data to update can not be empty"})
+    }
+    
+
+    const id = req.params.id;
+    Userdb.findByIdAndUpdate(id, req.body, { useFindAndModify: false})
+        .then(data => {
+            if(!data){
+                res.status(404).send({ message : `Cannot Update user with ${id}. Maybe user not found!`})
+            }else{
+                res.send(data)
+            }
+        })
+        .catch(err =>{
+            res.status(500).send({ message : "Error Update user information"})
+        })
 }
 
 
@@ -64,6 +109,7 @@ exports.update = (req, res)=>{
             res.status(500).send({ message : "Error Update user information"})
         })
 }
+
 
 
 
